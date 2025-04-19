@@ -17,7 +17,7 @@ interface TaskFormProps {
 		handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 		handleOptionClick: (name: string, value: string) => void;
 		handleSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
-		taskId: string | null;
+		taskId: number | null;
 	};
 }
 

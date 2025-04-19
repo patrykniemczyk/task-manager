@@ -78,14 +78,11 @@ export function TaskTable() {
 	const renderSkeletonRows = (count: number = 3) => (
 		Array.from({ length: count }).map((_, idx) => (
 			<TableRow key={idx}>
-				{Array.from({ length: 7 }).map((_, i) => (
+				{Array.from({ length: 8 }).map((_, i) => (
 					<TableCell key={i}>
 						<Skeleton className="h-4 w-full" />
 					</TableCell>
 				))}
-				<TableCell>
-					<Skeleton className="h-4 w-16" />
-				</TableCell>
 			</TableRow>
 		))
 	);
@@ -110,7 +107,7 @@ export function TaskTable() {
 					<TableBody>{renderSkeletonRows()}</TableBody>
 				</Table>
 			) : sortedTasks.length === 0 ? (
-				<div className="text-4xl font-extrabold">All tasks completed!</div>
+				<div className="text-5xl mt-10 font-extrabold text-center">All tasks completed!</div>
 			) : (
 				<Table>
 					<TableCaption>A list of your current tasks.</TableCaption>
