@@ -13,8 +13,8 @@ const useNavigateWithData = () => {
 			status: 'Not started',
 			priority: 'Medium',
 			effort: 'Medium',
-			dueDate: '',
-			taskType: '',
+			duedate: '',
+			tasktype: '',
 			...overrides
 		}
 

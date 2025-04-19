@@ -5,6 +5,6 @@ export type Task = {
 	status: "Not started" | "In progress" | "In review" | "Completed"
 	priority: "High" | "Medium" | "Low"
 	effort: "High" | "Medium" | "Low"
-	dueDate: string
-	taskType: string
+	duedate: string
+	tasktype: string
 }

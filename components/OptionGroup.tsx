@@ -4,7 +4,7 @@ import clsx from 'clsx';
 interface OptionGroupProps {
 	name: string;
 	options: string[];
-	form: { [key: string]: string };
+	form: { [key: string]: string | number };
 	handleOptionClick: (name: string, value: string) => void;
 }
 
@@ -24,6 +24,7 @@ const OptionGroup: React.FC<OptionGroupProps> = ({ name, options, form, handleOp
 			<div className='flex space-x-2'>
 				{options.map(opt => (
 					<button
+						type='button'
 						key={opt}
 						onClick={() => handleOptionClick(name, opt)}
 						className={clsx(

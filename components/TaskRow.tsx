@@ -1,16 +1,22 @@
+'use client'
 import React from "react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Task } from "@/types/Task";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { deleteTask } from "@/actions";
 
 interface TaskRowProps {
     task: Task;
     expanded: number;
     setExpanded: React.Dispatch<React.SetStateAction<number>>;
     navigateWithData: (task: Task) => void;
+    onDelete: (taskId: number) => void;
 }
 
-export function TaskRow({ task, expanded, setExpanded, navigateWithData }: TaskRowProps) {
+export function TaskRow({ task, expanded, setExpanded, navigateWithData, onDelete }: TaskRowProps) {
+
+    const { data: session } = useSession();
     return (
         <React.Fragment key={task.id}>
             <TableRow>
@@ -53,37 +59,55 @@ export function TaskRow({ task, expanded, setExpanded, navigateWithData }: TaskR
 							  `}
                 >{task.effort}</TableCell>
 
-                <TableCell>{task.dueDate}</TableCell>
-                <TableCell>{task.taskType}</TableCell>
+                <TableCell>{task.duedate}</TableCell>
+                <TableCell>{task.tasktype}</TableCell>
 
-                <TableCell className="flex flex-row gap-3">
+                <TableCell className="flex flex-row items-center gap-3">
                     <Image
                         src='/edit.png'
                         width={16}
                         height={16}
                         alt="Edit task"
                         onClick={() => navigateWithData(task)}
-                        className="invert cursor-pointer"
+                        className="invert cursor-pointer w-[16px] h-[16px]"
                     />
-                    <Image
-                        src='/bin.png'
-                        width={16}
-                        height={16}
-                        alt="Delete task"
-                        className="invert cursor-pointer"
-                    />
+                    <form className="w-[16px] h-[16px]" onSubmit={(e) => {
+                        e.preventDefault();
+                        if (session?.user?.email) {
+                            deleteTask(session.user.email, task.id);
+                            if (expanded === task.id) {
+                                setExpanded(-1);
+                            }
+                            onDelete(task.id);
+                        } else {
+                            console.error("User email is not available");
+                        }
+                    }}>
+
+                        <button type="submit" className="p-0 border-none bg-transparent cursor-pointer">
+                            <Image
+                                src='/bin.png'
+                                width={16}
+                                height={16}
+                                alt="Delete task"
+                                className="invert cursor-pointer w-[16px] h-[16px]"
+                            />
+                        </button>
+                    </form>
                 </TableCell>
             </TableRow>
 
-            {expanded === task.id && (
-                <TableRow>
-                    <TableCell colSpan={8}>
-                        <div className="p-2 rounded-md text-sm text-gray-300 max-w-[calc(var(--container-4xl)-calc(var(--spacing)*2*2))] break-words whitespace-normal">
-                            {task.description}
-                        </div>
-                    </TableCell>
-                </TableRow>
-            )}
+            {
+                expanded === task.id && (
+                    <TableRow>
+                        <TableCell colSpan={8}>
+                            <div className="p-2 rounded-md text-sm text-gray-300 max-w-[calc(var(--container-4xl)-calc(var(--spacing)*2*2))] break-words whitespace-normal">
+                                {task.description}
+                            </div>
+                        </TableCell>
+                    </TableRow>
+                )
+            }
         </React.Fragment >
     );
 }

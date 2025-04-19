@@ -1,15 +1,24 @@
 'use client'
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { createTask, updateTask } from '@/actions';
+import { useRouter } from 'next/navigation'
+import { Task } from '@/types/Task';
 
 export const useTaskForm = () => {
-	const [form, setForm] = useState({
+
+	const { data: session } = useSession();
+	const router = useRouter()
+
+	const [form, setForm] = useState<Task>({
+		id: 0,
 		title: '',
 		description: '',
 		status: 'Not started',
 		priority: 'Medium',
 		effort: 'Medium',
-		dueDate: '',
-		taskType: ''
+		duedate: '',
+		tasktype: ''
 	});
 	const [taskId, setTaskId] = useState<number | null>(null);
 
@@ -17,10 +26,14 @@ export const useTaskForm = () => {
 		const data = sessionStorage.getItem('taskDefaults');
 		if (data) {
 			const parsed = JSON.parse(data);
-			setForm(parsed);
+			setForm(prev => ({
+				...prev,
+				...parsed,
+			}));
 			setTaskId(parsed.id || null);
 		}
 	}, []);
+
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const { name, value } = e.target;
@@ -33,7 +46,20 @@ export const useTaskForm = () => {
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
-		console.log('New Task:', form, 'taskId:', taskId);
+		if (taskId) {
+			if (session?.user?.email) {
+				updateTask(session.user.email, { ...form, id: taskId });
+			} else {
+				console.error('User email is not available.');
+			}
+		} else {
+			if (session?.user?.email) {
+				createTask(session.user.email, { ...form, id: taskId ?? 0 });
+			} else {
+				console.error('User email is not available.');
+			}
+		}
+		router.push('/tasks');
 	}
 
 	return {

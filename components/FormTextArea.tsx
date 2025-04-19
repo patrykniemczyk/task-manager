@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 interface FormTextAreaProps {
 	value: string;
@@ -8,27 +8,25 @@ interface FormTextAreaProps {
 }
 
 const FormTextArea: React.FC<FormTextAreaProps> = ({ value, onChange, placeholder }) => {
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 	useEffect(() => {
-		document.querySelectorAll("textarea").forEach(function (textarea) {
-			textarea.style.height = textarea.scrollHeight + "px";
-			textarea.style.overflowY = "hidden";
-
-			textarea.addEventListener("input", function () {
-				this.style.height = "auto";
-				this.style.height = this.scrollHeight + "px";
-			});
-		});
-	});
+		if (textareaRef.current) {
+			textareaRef.current.style.height = 'auto';
+			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+		}
+	}, [value]);
 
 	return (
 		<div>
 			<label className='block mb-4'>Description:</label>
 			<textarea
+				ref={textareaRef}
 				name='description'
 				value={value}
 				onChange={onChange}
 				spellCheck='false'
+				rows={2}
 				className='w-full p-4 border rounded resize-none overflow-hidden'
 				placeholder={placeholder}
 			/>

@@ -1,29 +1,32 @@
-'use client'
-import React from 'react'
-import { Button } from '@/components/ui/button'
-import TaskTable from '@/components/TaskTable'
-import useNavigateWithData from '@/hooks/useNavigateWithData'
+'use client';
+
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+
+import DashboardHeader from '@/components/DashboardHeader';
+import TaskTable from '@/components/TaskTable';
 
 const Page = () => {
-	const navigateWithData = useNavigateWithData();
+	const { data: session, status } = useSession();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (status === 'unauthenticated') {
+			router.push('/');
+		}
+	}, [status, router]);
+
+	if (status === 'loading') {
+		return null;
+	}
 
 	return (
 		<>
-			<div className='flex mt-20'>
-				<div>
-					<h1 className='text-4xl font-semibold mb-2'>Hi, Patryk.</h1>
-					<p className='mb-10'>Stay organized with your tasks.</p>
-				</div>
-				<div className='ml-auto m-6'>
-					<Button variant='outline' onClick={() => navigateWithData()}>New task</Button>
-				</div>
-				<div className='m-6 ml-0'>
-					<Button variant='outline'>Sign out</Button>
-				</ div>
-			</ div>
+			<DashboardHeader username={session?.user?.name} />
 			<TaskTable />
 		</>
-	)
-}
+	);
+};
 
-export default Page
+export default Page;
