@@ -64,7 +64,10 @@ export function TaskTable() {
 	}, [session]);
 
 	const sortedTasks = [...tasks].sort((a, b) => {
-		const dateComparison = new Date(a.duedate).getTime() - new Date(b.duedate).getTime();
+		const getDateValue = (date: string) =>
+			date === '-' ? -Infinity : new Date(date).getTime();
+
+		const dateComparison = getDateValue(a.duedate) - getDateValue(b.duedate);
 		if (dateComparison !== 0) return dateComparison;
 
 		const priorityComparison = priorityOrder.indexOf(a.priority) - priorityOrder.indexOf(b.priority);
@@ -72,6 +75,7 @@ export function TaskTable() {
 
 		return statusOrder.indexOf(a.status) - statusOrder.indexOf(b.status);
 	});
+
 
 	const hasCompletedTasks = tasks.some(task => task.status === "Completed");
 
